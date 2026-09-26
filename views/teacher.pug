@@ -1,0 +1,9 @@
+html
+    head
+        meta(charset='utf-8')
+        title Преподаватель
+    body
+        if teacher != null
+            div #{teacher.firstname} #{teacher.patronymic} #{teacher.lastname}
+        else 
+            div Преподаватель с таким id не найден

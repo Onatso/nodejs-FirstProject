@@ -1,0 +1,8 @@
+html
+  head
+      meta(charset='utf-8')
+      title Список учебных курсов
+  body
+      each el in disciplines
+          li
+            a(href="/discipline/" + el.id) #{el.name}

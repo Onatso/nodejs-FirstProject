@@ -1,0 +1,9 @@
+html
+    head
+        meta(charset='utf-8')
+        title Учебные курсы
+    body
+        if discipline != null
+            div #{discipline.name}
+        else 
+            div Учебный курс с таким id не найден
