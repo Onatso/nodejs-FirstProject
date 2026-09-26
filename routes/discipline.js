@@ -22,7 +22,8 @@ var disciplines = [
 router.get("/listDisciplines", function(req, res)  {
 
         res.render("listDisciplines", {
-        disciplines: disciplines
+        disciplines: disciplines,
+        title: "Учебные курсы"
     });  
 
 });  
@@ -34,7 +35,8 @@ router.get("/discipline/:id", function(req, res)  {
     var discipline = disciplines.find(item => item.id == discipline_id);
 
     res.render("discipline", {
-        discipline: discipline
+        discipline: discipline,
+        title: "Учебный курс"
     });
 
 });  

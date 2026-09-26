@@ -7,6 +7,9 @@ var app = express();
 // Указание, что каталог public используется для хранения статических файлов
 app.use(express.static("public"));
 
+app.set("view engine", "ejs");
+app.set("view engine", "hbs");
+
 // Подключение шаблонизатора Pug.
 app.set("view engine", "pug");
 
@@ -50,3 +53,31 @@ app.use('/', teacher);
 var discipline = require('./routes/discipline');
 app.use('/', discipline);
 
+// Определение обработчика для маршрута "/pugPractice"
+app.get("/pugPractice", function(request, response)  {   
+    response.render("pugPractice", {
+        title: "Работа с шаблонизатором Pug"
+    }); 
+});
+
+// Определение обработчика для маршрута "/ejsPractice"
+app.get("/ejsPractice", function(request, response)  {   
+  response.render("ejsPractice.ejs"); 
+});
+
+// Определение обработчика для маршрута "/hbsPractice"
+app.get("/hbsPractice", function(req, res) {
+    var a = 2026;
+    var b = Math.floor(Math.random() * 10) + 1;
+
+    res.render("hbsPractice.hbs", {
+        title: "Работа с шаблонизатором Handlebars",
+        a: a,
+        b: b,
+        try: b >= 5,          
+        arr: [1, 2, 3, 4, 5],
+        b1: b == 1,
+        b2: b == 2,
+        b3: b == 3
+    });
+});

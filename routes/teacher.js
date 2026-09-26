@@ -28,7 +28,8 @@ var teachers = [
 router.get("/listTeachers", function(req, res)  {
 
         res.render("listTeachers", {
-        teachers: teachers
+        teachers: teachers,
+        title: "Список преподавателей"
     });  
 
 });  
@@ -40,7 +41,8 @@ router.get("/teacher/:id", function(req, res)  {
     var teacher = teachers.find(item => item.id == teacher_id);
 
     res.render("teacher", {
-        teacher: teacher
+        teacher: teacher,
+        title: "Преподаватель"
     });
 
 });  

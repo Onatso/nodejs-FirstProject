@@ -1,8 +1,6 @@
-html
-  head
-      meta(charset='utf-8')
-      title Список студентов
-  body
-      each el in students
-          li
+extends ./head
+block content
+    each el in students
+        li
             a(href="/student/" + el.id) #{el.firstname} #{el.patronymic} #{el.lastname} #{el.dateOfBirth} #{el.phone}
+    include ./information

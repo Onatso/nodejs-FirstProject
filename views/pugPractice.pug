@@ -1,0 +1,25 @@
+extends ./head
+block content
+    - var a = 2026
+    - var b = Math.floor(Math.random() * 10) + 1
+    h1= title
+    p Сейчас #{a} год
+
+    if b >= 5
+        p text
+    else
+        p :IBGOWDJVN:LSDJONV:JSDv
+
+    for i in [1, 2, 3, 4, 5]
+        p #{i}
+
+
+    case b
+        when 1
+            p 1
+        when 2
+            p 2
+        when 3
+            p 3
+        default
+            p null

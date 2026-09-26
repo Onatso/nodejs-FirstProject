@@ -42,7 +42,8 @@ module.exports = router;
 
 router.get("/listStudents", function(req, res)  {
         res.render("listStudents", {
-        students: students
+        students: students,
+        title: "Список студентов"
     });  
 });  
 
@@ -59,7 +60,8 @@ router.get("/student/:id", function(req, res)  {
     var student = students.find(item => item.id == student_id);
 
     res.render("student", {
-        student: student
+        student: student,
+        title: "Студент"
     });
 
 });  
