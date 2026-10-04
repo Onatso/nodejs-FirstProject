@@ -22,36 +22,46 @@ app.listen(3000);
 // Определение обработчика для маршрута "/".
 // request — HTTP-запрос, свойствами которого являются строки запроса, параметры, тело запроса, заголовки HTTP.
 // response — HTTP-ответ, который приложение Express отправляет при получении HTTP-запроса.
-app.get("/", function(request, response)  {
-   // render() — функция, которая на основе шаблона (в данном случае шаблона index.pug) генерирует страницу html, которая отправляется пользователю.
-    response.render("index");
+app.get("/", function (request, response) {
+    response.render("index", {
+        title: "Главная страница"
+    });
 });
 
-// Определение обработчикв для маршрута "/test"
-app.get("/test", function(request, response)  {
-   
-    response.render("test", {description: "Описание страницы"}); 
+app.get("/test", function (request, response) {
+    response.render("test", {
+        title: "Тестовая страница",
+        description: "Описание страницы"
+    });
 });
 
-app.get("/information", function(request, response)  {
- 
-  response.render("test", {description: "На этой странице будет описание проекта"});
+app.get("/information", function (request, response) {
+    response.render("test", {
+        title: "Информация",
+        description: "На этой странице будет описание проекта"
+    });
 });
-
-// подключение модуля student.js
-var student = require('./routes/student');
-app.use('/', student);
 
 var bodyParser = require('body-parser');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+// подключение модуля student.js
+var student = require('./routes/student');
+app.use('/', student);
+
 var teacher = require('./routes/teacher');
 app.use('/', teacher);
 
 var discipline = require('./routes/discipline');
 app.use('/', discipline);
+
+var studentGroup = require('./routes/studentGroup');
+app.use('/', studentGroup);
+
+var schedule = require('./routes/schedule');
+app.use('/', schedule);
 
 // Определение обработчика для маршрута "/pugPractice"
 app.get("/pugPractice", function(request, response)  {   
@@ -81,3 +91,4 @@ app.get("/hbsPractice", function(req, res) {
         b3: b == 3
     });
 });
+

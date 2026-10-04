@@ -1,6 +1,0 @@
-extends ./head
-block content
-    each el in disciplines
-        li
-            a(href="/discipline/" + el.id) #{el.name}
-    include ./information
