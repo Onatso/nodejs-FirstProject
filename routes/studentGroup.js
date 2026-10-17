@@ -23,6 +23,18 @@ router.route("/addStudentGroup")
         );
 });
 
+router.get("/listStudentGroups", (req, res) => {
+    db.all('SELECT * FROM student_group', (err, rows) => {
+        if (err) { // если произошла ошибка, то будет сгенерировано исключение (программа прекратит свою работу), можно предусмотреть другую обработку таких исключительных ситуаций
+            throw err;
+        }
+        res.render("studentGroup/listStudentGroups", { // указываем, что шаблон listStudentGroups.pug находится в подкаталоге studentGroup, который располагается в каталоге views
+            studentGroups: rows, // rows - результат запроса
+            title: "Список студенческих групп"
+        });
+    });
+});
+
 // просмотр и обновление студенческой группы
 router.get("/studentGroup/:id", (req, res) =>  {
     db.get(`SELECT * FROM student_group WHERE id=?`, [req.params.id], (err, rows) => {

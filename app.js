@@ -63,6 +63,9 @@ app.use('/', studentGroup);
 var schedule = require('./routes/schedule');
 app.use('/', schedule);
 
+var journal = require('./routes/journal');
+app.use('/', journal);
+
 // Определение обработчика для маршрута "/pugPractice"
 app.get("/pugPractice", function(request, response)  {   
     response.render("pugPractice", {

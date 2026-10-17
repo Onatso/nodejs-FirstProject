@@ -1,0 +1,31 @@
+extends ../head
+block content
+    form(action="/editAttendanceMark", method="POST")
+        input(type="hidden" name="student_group_id" value=student_group_id)
+        input(type="hidden" name="date_pair" value=date_pair)
+        each student in students
+            input(type="hidden" name="array_students_id" value=student.id)
+        each pair in disciplineTeacher
+            input(type="hidden" name="schedule_id" value=pair.schedule_id)
+        table(border="1")
+            thead
+                tr
+                    td(rowspan="2" colspan="2")
+                    each pair in disciplineTeacher
+                        th #{pair.discipline_name}
+                tr
+                    each pair in disciplineTeacher
+                        th #{pair.teacher_name}
+                tr
+                    th №
+                    th Список студентов
+                    th(colspan=disciplineTeacher.length) Посещаемость
+            tbody
+                each student, i in students
+                    tr
+                        td #{i+1}
+                        td #{student.name}
+                        each pair, j in disciplineTeacher
+                            td
+                                input(name='attendance' + i + j type="checkbox" checked=(attendanceMap[student.id + "_" + pair.schedule_id] == 1))
+        input(type="submit" value="Сохранить")
