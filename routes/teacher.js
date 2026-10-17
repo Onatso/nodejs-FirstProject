@@ -135,4 +135,19 @@ router.route("/addDisciplineTeacher")
         }
     );
 });
+
+router.post("/getDisciplinesNotTeacher", function(req, res) {
+    db.all(
+        `SELECT * FROM discipline
+            WHERE NOT EXISTS (
+                SELECT * FROM discipline_teacher
+                WHERE teacher_id = ? AND discipline_teacher.discipline_id = discipline.id 
+        )`,
+        req.body.teacher_id, (err, rows) => {
+            if (err) {
+                throw err;
+            }
+            res.send(JSON.stringify(rows));
+        });
+});
     

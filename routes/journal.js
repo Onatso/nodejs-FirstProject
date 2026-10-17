@@ -330,3 +330,17 @@ router.post("/editAttendanceMark", (req, res) => {
         });
     }
 });
+
+router.post("/getAttendanceData", function(req, res) {
+    db.all(
+        `SELECT journal.id FROM journal
+            INNER JOIN schedule ON schedule.id=journal.schedule_id
+            WHERE schedule.student_group_id=? AND journal.date_pair=?`,
+        [req.body.student_group_id, req.body.date_pair],
+        (err, rows) => {
+            if (err) {
+                throw err;
+            }
+            res.send(JSON.stringify(rows));
+        });
+});

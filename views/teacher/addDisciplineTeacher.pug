@@ -1,10 +1,12 @@
 extends ../head
+block append scripts
+    script(src="/js/validate.js")
 block content
     form(action="/addDisciplineTeacher" method="POST")
-        select(name="discipline_id")
-            each el in disciplines
-                option(value=el.id) #{el.name}
-        select(name="teacher_id")
+        select(name="teacher_id" id="teacher_id" required)
             each el in teachers
+                option(value=el.id) #{el.name}
+        select(name="discipline_id" id="discipline_id" required)
+            each el in disciplines
                 option(value=el.id) #{el.name}
         input(type="submit" value="Добавить")

@@ -2,6 +2,7 @@ extends ../head
 block append scripts
     // подключаем скрипт
     script(src="/js/scriptAddAttendance.js")
+    script(src="/js/validate.js")
 block content
     form(action="/addAttendanceMark", method="POST")
         select(name="student_group_id" id="student_group_id")

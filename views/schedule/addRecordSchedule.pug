@@ -1,13 +1,16 @@
 extends ../head
+block append scripts
+    script(src="/js/validate.js")
 block content
     - var weekdays = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"]
     - var pair_numbers = [1, 2, 3, 4, 5]
     h2 Группа #{student_group.name}
     form(action="/addRecordSchedule/" + student_group.id, method="POST")
-        select(name="week_day")
+        input(type="hidden" id="student_group_id" value=student_group.id)
+        select(name="week_day" id="week_day")
             - for (var i = 0; i < weekdays.length; i++)
                 option(value=i) #{weekdays[i]}
-        select(name="pair_number")
+        select(name="pair_number" id="pair_number")
             each pair_number in pair_numbers
                 option(value=pair_number) #{pair_number}
         select(name="discipline_teacher_id") 

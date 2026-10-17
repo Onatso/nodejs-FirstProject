@@ -96,3 +96,26 @@ router.route("/addRecordSchedule/:student_group_id")
         }
     );
 });
+
+router.post("/getFreePairNumbers", function(req, res) {
+    db.all(
+        `SELECT pair_number FROM schedule WHERE student_group_id=? AND week_day=?`,
+        [req.body.student_group_id, req.body.week_day],
+        (err, rows) => {
+            if (err) {
+                throw err;
+            }
+            var all_pair_numbers = [1, 2, 3, 4, 5];
+            var busy = [];
+            for (var i in rows) {
+                busy.push(rows[i].pair_number);
+            }
+            var free = [];
+            for (var i in all_pair_numbers) {
+                if (busy.indexOf(all_pair_numbers[i]) === -1) {
+                    free.push(all_pair_numbers[i]);
+                }
+            }
+            res.send(JSON.stringify(free));
+        });
+});
