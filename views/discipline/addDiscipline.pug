@@ -1,8 +1,16 @@
 extends ../head
+block append scripts
+    script(type='text/javascript').
+        CKEDITOR.replace('editor', {
+            filebrowserUploadUrl: '/uploader', // адрес, который будет обрабатывать загрузку файлов (будем загружать изображения)
+            filebrowserUploadMethod: 'form' // указываем, что файлы будут загружаться из формы
+        });
 block content
     div(class="col-md-5")
         form(action="/addDiscipline" method="POST")
             div(class="form-group mb-3")
-                input(name="name" type="text" placeholder="Название" required class="form-control")
+                input(name="name" type="text" placeholder="Наименование учебной дисциплины" required class="form-control")
+            div(class="form-group mb-3")
+                textarea#editor(name="description")
             div(class="form-group mb-3")
                 input(type="submit" value="Добавить" class="btn btn-success")

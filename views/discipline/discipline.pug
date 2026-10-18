@@ -1,14 +1,29 @@
 extends ../head
+block append scripts
+    script(type='text/javascript').
+        CKEDITOR.replace('editor', {
+            filebrowserUploadUrl: '/uploader',
+            filebrowserUploadMethod: 'form'
+        });
 block content
     if discipline != null
-        div(class="col-md-5")
-            form(action="/updateDiscipline/" + discipline.id, method="POST")
-                div(class="form-group mb-3")
-                    input(name="name" type="text" placeholder="Название" value=discipline.name required class="form-control")
-                div(class="form-group mb-3")
-                    input(type="submit" value="Обновить" class="btn btn-primary")
-            form(action="/deleteDiscipline/" + discipline.id, method="POST")
-                div(class="form-group mb-3")
-                    input(type="submit" value="Удалить" class="btn btn-danger")
+        form(action="/updateDiscipline/" + discipline.id, method="POST")
+            div(class="form-group mb-3")
+                input(name="name" type="text" placeholder="Название учебной дисциплины" value=discipline.name required class="form-control")
+            div(class="form-group mb-3")
+                div(id="value-edit-description")
+                    // Выводим описание дисциплины, которое сформировано при помощи WYSIWYG-редактора.
+                    // Знак != обозначает не проверку на неравенство, а то, что выводим код HTML.
+                    // Если поставить знак равенства, то код HTML будет воспринят в качестве простой строки.
+                    div!=discipline.description
+                    input(id="button-edit-description" class="btn btn-sm-lg btn btn-primary mb-3" type="button" value="Редактировать описание")
+                // по умолчанию скрываем редактор, его будем отображать при нажатии на кнопку "Редактировать описание"
+                div(id="form-edit-description" class="div-none")
+                    textarea#editor(name="description")!=discipline.description
+            div(class="form-group mb-3")
+                input(type="submit" value="Обновить" class="btn btn-success")
+        form(action="/deleteDiscipline/" + discipline.id, method="POST")
+            div(class="form-group mb-3")
+                input(type="submit" value="Удалить" class="btn btn-danger")
     else 
         p Учебный курс с таким id не найден
