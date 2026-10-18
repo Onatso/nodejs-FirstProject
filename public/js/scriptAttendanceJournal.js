@@ -52,9 +52,9 @@ $(document).ready(() => {
                 for (var i in journal) {
                     strDelete = strDelete +
                         `<td>
-                        <form action="/deleteJournal/${journal[i].journal_id}" method="POST">
-                            <input type="submit" value="Удалить">
-                        </form>
+                            <form action="/deleteJournal/${journal[i].journal_id}" method="POST">
+                                <input type="submit" value="Удалить" class="btn btn-danger">
+                            </form>
                         </td>`
                     ;
                 }
@@ -91,8 +91,8 @@ $(document).ready(() => {
 
                 // формируем таблицу, но здесь используется "чистый" html
                 $("#attendance_table_id").append(
-                    `<table border="1">
-                        <thead>
+                    `<table border="1" class="table table-bordered table-striped mt-3">
+                        <thead class="table-primary">
                             <tr>
                                 <td rowspan="2" colspan="2"></td>
                                 ${strDiscipline}
@@ -126,8 +126,8 @@ $(document).ready(() => {
                 );
 
                 $("#attendance_table_id").append(
-                    `<div>
-                        <a href="/editAttendanceMark?student_group_id=${$("#student_group_id").val()}&date_pair=${$("#date_pair").val()}">
+                    `<div class="mt-3">
+                        <a href="/editAttendanceMark?student_group_id=${$("#student_group_id").val()}&date_pair=${$("#date_pair").val()}" class="btn btn-primary">
                             Редактировать отметки посещаемости
                         </a>
                     </div>`

@@ -78,8 +78,8 @@ function getDataForAddingAttendance(){
 
             // формируем таблицу
             $("#attendance_table_id").append(
-                `<table border="1">
-                    <thead>
+                `<table border="1" class="table table-bordered table-striped mt-3">
+                        <thead class="table-primary">
                         <tr>
                             <td rowspan="2" colspan="2"></td>
                             ${strDiscipline}

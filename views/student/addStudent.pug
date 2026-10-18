@@ -1,8 +1,12 @@
 extends ../head
 block content
-    form(action="/addStudent" method="POST")
-        input(name="name" type="text" placeholder="ФИО студента" required)
-        select(name="student_group_id")
-            each el in studentGroups
-                option(value=el.id) #{el.name}
-        input(type="submit" value="Добавить")
+    div(class="col-md-5")
+        form(action="/addStudent" method="POST")
+            div(class="form-group mb-3")
+                input(name="name" type="text" placeholder="ФИО студента" required class="form-control")
+            div(class="form-group mb-3")
+                select(name="student_group_id" class="form-select")
+                    each el in studentGroups
+                        option(value=el.id) #{el.name}
+            div(class="form-group mb-3")
+                input(type="submit" value="Добавить" class="btn btn-success")

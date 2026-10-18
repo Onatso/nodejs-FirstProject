@@ -1,8 +1,9 @@
 extends ../head
 block content
     // ссылка на страницу для добавления студенческой группы
-    a(href="/addStudentGroup") Добавить студенческую группу
-    each el in studentGroups
-        li
-            // ссылка на страницу для просмотра и изменения данных студенческой группы
-            a(href="/studentGroup/" + el.id) #{el.name}
+    a(href="/addStudentGroup" class="btn btn-success") Добавить студенческую группу
+    ul(class="list-group mt-3")
+        each el in studentGroups
+            li(class="list-group-item")
+                // ссылка на страницу для просмотра и изменения данных студенческой группы
+                a(href="/studentGroup/" + el.id) #{el.name}

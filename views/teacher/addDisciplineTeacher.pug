@@ -2,11 +2,15 @@ extends ../head
 block append scripts
     script(src="/js/validate.js")
 block content
-    form(action="/addDisciplineTeacher" method="POST")
-        select(name="teacher_id" id="teacher_id" required)
-            each el in teachers
-                option(value=el.id) #{el.name}
-        select(name="discipline_id" id="discipline_id" required)
-            each el in disciplines
-                option(value=el.id) #{el.name}
-        input(type="submit" value="Добавить")
+    div(class="col-md-5")
+        form(action="/addDisciplineTeacher" method="POST")
+            div(class="form-group mb-3")
+                select(name="teacher_id" id="teacher_id" required class="form-select")
+                    each el in teachers
+                        option(value=el.id) #{el.name}
+            div(class="form-group mb-3")
+                select(name="discipline_id" id="discipline_id" required class="form-select")
+                    each el in disciplines
+                        option(value=el.id) #{el.name}
+            div(class="form-group mb-3")
+                input(type="submit" value="Добавить" class="btn btn-success")

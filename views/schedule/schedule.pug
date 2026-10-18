@@ -1,6 +1,7 @@
 extends ../head
 block content
-    each el in studentGroups
-        li
-            // ссылка на страницу расписания группы
-            a(href="/groupSchedule/" + el.id) #{el.name}
+    ul(class="list-group")
+        each el in studentGroups
+            li(class="list-group-item")
+                // ссылка на страницу расписания группы
+                a(href="/groupSchedule/" + el.id) #{el.name}
