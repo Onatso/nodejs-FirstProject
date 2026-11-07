@@ -20,6 +20,7 @@ $(document).ready(() => {
             for (var i in data) {
                 $('#discipline_id').append('<option value='+data[i].id+'>' + data[i].name + '</option>');
             }
+            $('#discipline_id').trigger('change');
         });
     }
 
@@ -68,11 +69,13 @@ $(document).ready(() => {
         }).done((data) => {
             if (data.length === 0) {
                 $('#pair_number').append('<option value="" disabled selected>Нет свободных пар</option>');
+                $('#pair_number').trigger('change');
                 return;
             }
             for (var i in data) {
                 $('#pair_number').append('<option value='+data[i]+'>' + data[i] + '</option>');
             }
+            $('#pair_number').trigger('change');
         });
     }
 

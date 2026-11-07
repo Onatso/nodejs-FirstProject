@@ -6,10 +6,9 @@ block content
                 div(class="form-group mb-3")
                     input(name="name" type="text" placeholder="ФИО студента" value=student.name required class="form-control")
                 div(class="form-group mb-3")
-                    select(name="student_group_id" class="form-select")
+                    select(name="student_group_id" class="form-select" id="student_group_id")
                         each el in studentGroups
                             if(student.student_group_id == el.id)
-                                // подставляем по умолчанию значение той группы, к которой уже прикреплён студент
                                 option(value=el.id selected) #{el.name}
                             else
                                 option(value=el.id) #{el.name}

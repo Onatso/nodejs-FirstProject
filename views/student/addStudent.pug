@@ -5,7 +5,7 @@ block content
             div(class="form-group mb-3")
                 input(name="name" type="text" placeholder="ФИО студента" required class="form-control")
             div(class="form-group mb-3")
-                select(name="student_group_id" class="form-select")
+                select(name="student_group_id" class="form-select" id="student_group_id")
                     each el in studentGroups
                         option(value=el.id) #{el.name}
             div(class="form-group mb-3")
