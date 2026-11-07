@@ -10,6 +10,11 @@ html
     body
         nav(class="navbar navbar-light" style="background-color: #B0DDFB;")
             div(class="container-md")
+                if username
+                    div #{username}
+                    a(href="/logout" class="navbar-brand") Выйти
+                else
+                    a(href="/login" class="navbar-brand") Войти
                 a(href="/listStudentGroups" class="navbar-brand") Студенческие группы
                 a(href="/listStudents" class="navbar-brand") Студенты
                 a(href="/listTeachers" class="navbar-brand") Преподаватели

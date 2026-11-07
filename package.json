@@ -10,13 +10,18 @@
     "start": "nodemon app.js"
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "body-parser": "^2.3.0",
+    "connect-flash": "^0.1.1",
     "connect-multiparty": "^2.2.0",
     "ejs": "^6.0.1",
     "express": "^5.2.1",
+    "express-session": "^1.19.0",
     "hbs": "^4.3.1",
     "moment": "^2.31.0",
     "nodemon": "^3.1.14",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
     "pug": "^3.0.4",
     "select2": "^4.1.0",
     "sqlite3": "^6.0.1",

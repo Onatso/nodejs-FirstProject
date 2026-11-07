@@ -3,9 +3,11 @@ var router = express.Router();
 
 var db = require("./database.js");
 
+var isAuth = require('./isAuth');
+
 module.exports = router;
 
-router.get("/schedule", (req, res) => {
+router.get("/schedule", isAuth.isAuthenticated, (req, res) => {
     db.all('SELECT * FROM student_group', (err, rows) => {
         if (err) {
             throw err;
@@ -17,7 +19,7 @@ router.get("/schedule", (req, res) => {
     });
 });
 
-router.get("/groupSchedule/:student_group_id", (req, res) => {
+router.get("/groupSchedule/:student_group_id", isAuth.isAuthenticated, (req, res) => {
     db.get(
         `SELECT * FROM student_group WHERE id=?`,
         [req.params.student_group_id], (err, rows) => {
@@ -48,7 +50,7 @@ router.get("/groupSchedule/:student_group_id", (req, res) => {
 });
 
 router.route("/addRecordSchedule/:student_group_id")
-    .get((req, res) => {
+    .get(isAuth.isAuthenticated,(req, res) => {
         db.get(
             `SELECT * FROM student_group WHERE id=?`,
             [req.params.student_group_id], (err, rows) => {
@@ -74,7 +76,7 @@ router.route("/addRecordSchedule/:student_group_id")
             });
         });
     })
-    .post((req, res) => {
+    .post(isAuth.isAuthenticated,(req, res) => {
         db.run(`INSERT INTO schedule(student_group_id, week_day, pair_number, discipline_teacher_id) VALUES (?, ?, ?, ?)`, 
         [req.params.student_group_id, req.body.week_day, req.body.pair_number, req.body.discipline_teacher_id],
             (err) => {
@@ -86,7 +88,7 @@ router.route("/addRecordSchedule/:student_group_id")
         );
     });
 
-    router.post("/deleteSchedule/scheduleId=:schedule_id/studentGroupId=:student_group_id", (req, res) => {
+    router.post("/deleteSchedule/scheduleId=:schedule_id/studentGroupId=:student_group_id", isAuth.isAuthenticated, (req, res) => {
     db.run(`DELETE FROM schedule WHERE id=?`, [req.params.schedule_id],
         (err) => {
             if (err) {
@@ -97,7 +99,7 @@ router.route("/addRecordSchedule/:student_group_id")
     );
 });
 
-router.post("/getFreePairNumbers", function(req, res) {
+router.post("/getFreePairNumbers", isAuth.isAuthenticated, function(req, res) {
     db.all(
         `SELECT pair_number FROM schedule WHERE student_group_id=? AND week_day=?`,
         [req.body.student_group_id, req.body.week_day],

@@ -3,15 +3,17 @@ var router = express.Router();
 
 var db = require("./database.js");
 
+var isAuth = require('./isAuth');
+
 module.exports = router;
 
 router.route("/addStudentGroup")
-    .get((req, res) => {
+    .get(isAuth.isAuthenticated,(req, res) => {
         res.render("studentGroup/addStudentGroup", {
             title: "Добавление студенческой группы"
         })
     })
-    .post((req, res) => {
+    .post(isAuth.isAuthenticated,(req, res) => {
         db.run(`INSERT INTO student_group(name) VALUES (?)`, [req.body.name],
             (err) => {
                 if (err) {
@@ -23,7 +25,7 @@ router.route("/addStudentGroup")
         );
 });
 
-router.get("/listStudentGroups", (req, res) => {
+router.get("/listStudentGroups", isAuth.isAuthenticated, (req, res) => {
     db.all('SELECT * FROM student_group', (err, rows) => {
         if (err) { // если произошла ошибка, то будет сгенерировано исключение (программа прекратит свою работу), можно предусмотреть другую обработку таких исключительных ситуаций
             throw err;
@@ -36,7 +38,7 @@ router.get("/listStudentGroups", (req, res) => {
 });
 
 // просмотр и обновление студенческой группы
-router.get("/studentGroup/:id", (req, res) =>  {
+router.get("/studentGroup/:id", isAuth.isAuthenticated, (req, res) =>  {
     db.get(`SELECT * FROM student_group WHERE id=?`, [req.params.id], (err, rows) => {
         if (err) {
             throw err;
@@ -48,7 +50,7 @@ router.get("/studentGroup/:id", (req, res) =>  {
     });
 });
 
-router.post("/updateStudentGroup/:id", (req, res) => {
+router.post("/updateStudentGroup/:id", isAuth.isAuthenticated, (req, res) => {
     db.run(`UPDATE student_group SET name=? WHERE id=?`, [req.body.name, req.params.id],
         (err) => {
             if (err) {
@@ -60,7 +62,7 @@ router.post("/updateStudentGroup/:id", (req, res) => {
     );
 });
 
-router.post("/deleteStudentGroup/:id", (req, res) => {
+router.post("/deleteStudentGroup/:id", isAuth.isAuthenticated, (req, res) => {
     db.run(`DELETE FROM student_group WHERE id=?`, [req.params.id],
         (err) => {
             if (err) {

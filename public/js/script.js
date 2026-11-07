@@ -7,7 +7,7 @@ $(document).ready(() => {
         $("#form-edit-description").removeClass("div-none");
     });
 
-    $('#student_group_id').select2({
+    $('#student_group_id').select2({    
         placeholder: "Выберите студенческую группу",
         allowClear: true,
         width: '100%'

@@ -4,6 +4,8 @@ var router = express.Router();
 
 var db = require("./database.js");
 
+var isAuth = require('./isAuth');
+
 var uuid = require('uuid');
 
 var fs = require('fs');
@@ -13,7 +15,7 @@ var multipartMiddleware = multipart();
 
 module.exports = router;
 
-router.get("/listDisciplines", (req, res) => {
+router.get("/listDisciplines", isAuth.isAuthenticated, (req, res) => {
     db.all(
         `SELECT discipline.* FROM discipline`,
         (err, rows) => {
@@ -27,7 +29,7 @@ router.get("/listDisciplines", (req, res) => {
     });
 });
 
-router.get("/discipline/:id", function(req, res)  {
+router.get("/discipline/:id", isAuth.isAuthenticated, function(req, res)  {
     var discipline_id = req.params.id;
 
     db.get(`SELECT * FROM discipline WHERE id=?`, [discipline_id], (err, rows) => {
@@ -41,13 +43,13 @@ router.get("/discipline/:id", function(req, res)  {
 });
 
 router.route("/addDiscipline")
-    .get((req, res) => {
+    .get(isAuth.isAuthenticated,(req, res) => {
         res.render("discipline/addDiscipline", {
             title: "Добавление учебного курса"
         });
 })
 
-    .post((req, res) => {
+    .post(isAuth.isAuthenticated,(req, res) => {
         db.run(
             `INSERT INTO discipline(name, description) VALUES (?, ?)`,
             [req.body.name, req.body.description],
@@ -60,7 +62,7 @@ router.route("/addDiscipline")
         );
     });
 
-router.post("/updateDiscipline/:id", (req, res) => {
+router.post("/updateDiscipline/:id", isAuth.isAuthenticated, (req, res) => {
     db.run(
         `UPDATE discipline SET name=?, description=? WHERE id=?`,
         [req.body.name, req.body.description, req.params.id],
@@ -73,7 +75,7 @@ router.post("/updateDiscipline/:id", (req, res) => {
     );
 });
 
-router.post("/deleteDiscipline/:id", (req, res) => {
+router.post("/deleteDiscipline/:id", isAuth.isAuthenticated, (req, res) => {
     db.run('DELETE FROM discipline WHERE id=?', [req.params.id],
         (err) => {
             if (err) {

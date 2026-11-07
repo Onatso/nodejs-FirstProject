@@ -4,10 +4,12 @@ var router = express.Router();
 
 var db = require("./database.js");
 
+var isAuth = require('./isAuth');
+
 // Указание, что модуль является экспортируемым (теперь его можно подключать в другие модули)
 module.exports = router;
 
-router.get("/listStudents", (req, res) => {
+router.get("/listStudents", isAuth.isAuthenticated, (req, res) => {
     db.all(
         `SELECT student.*, student_group.name as student_group_name FROM student
         INNER JOIN student_group ON student_group.id=student.student_group_id`,
@@ -22,7 +24,7 @@ router.get("/listStudents", (req, res) => {
     });
 });
 
-router.get("/student/:id", (req, res) => {
+router.get("/student/:id", isAuth.isAuthenticated, (req, res) => {
     db.get(
         `SELECT student.*, student_group.name as student_group_name FROM student
         INNER JOIN student_group ON student_group.id=student.student_group_id 
@@ -46,7 +48,7 @@ router.get("/student/:id", (req, res) => {
     });
 });
 
-router.post("/student/:id", function(req, res)  {
+router.post("/student/:id", isAuth.isAuthenticated, function(req, res)  {
     // отображение данных в терминале, которые были отправлены из формы 
     console.log(req.body)
     // переход по адресу localhost:3000/listStudents
@@ -54,7 +56,7 @@ router.post("/student/:id", function(req, res)  {
 }); 
 
 router.route("/addStudent")
-    .get((req, res) => {
+    .get(isAuth.isAuthenticated,(req, res) => {
         // получаем все группы для вывода в выпадающий список
         db.all(`SELECT * FROM student_group`, (err, rows) => {
             if (err) {
@@ -66,7 +68,7 @@ router.route("/addStudent")
             });
         });
 })
-    .post((req, res) => {
+    .post(isAuth.isAuthenticated,(req, res) => {
         db.run(
             `INSERT INTO student(name, student_group_id) VALUES (?, ?)`,
             [req.body.name, req.body.student_group_id],
@@ -79,7 +81,7 @@ router.route("/addStudent")
         );
 });
 
-router.post("/updateStudent/:id", (req, res) => {
+router.post("/updateStudent/:id", isAuth.isAuthenticated, (req, res) => {
     db.run(
         `UPDATE student SET name=?, student_group_id=? WHERE id=?`,
         [req.body.name, req.body.student_group_id, req.params.id],
@@ -92,7 +94,7 @@ router.post("/updateStudent/:id", (req, res) => {
     );
 });
 
-router.post("/deleteStudent/:id", (req, res) => {
+router.post("/deleteStudent/:id", isAuth.isAuthenticated, (req, res) => {
     db.run('DELETE FROM student WHERE id=?', [req.params.id],
         (err) => {
             if (err) {

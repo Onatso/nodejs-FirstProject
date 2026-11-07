@@ -3,6 +3,8 @@ var router = express.Router();
 
 var db = require("./database.js");
 
+var isAuth = require('./isAuth');
+
 var moment = require('moment');
 
 var TransactionDatabase = require("sqlite3-transactions").TransactionDatabase;
@@ -11,7 +13,7 @@ var dbTransaction = new TransactionDatabase(db);
 module.exports = router;
 
 router.route("/addAttendanceMark")
-    .get((req, res) => {
+    .get(isAuth.isAuthenticated,(req, res) => {
         db.all(`SELECT * FROM student_group`, (err, rows) => {
             if (err) {
                 throw err;
@@ -22,7 +24,7 @@ router.route("/addAttendanceMark")
             });
         });
     })
-    .post((req, res) => {
+    .post(isAuth.isAuthenticated,(req, res) => {
     var arrayStudents = req.body.array_students_id;
     if (Array.isArray(arrayStudents) == false && arrayStudents !== undefined) {
         arrayStudents = [];
@@ -100,7 +102,7 @@ router.route("/addAttendanceMark")
     });
 });
 
-router.post("/getDataForAddingAttendance", function(req, res) {
+router.post("/getDataForAddingAttendance", isAuth.isAuthenticated, function(req, res) {
     // Определим по дате номер дня недели.
     // В SQL есть функция WEEKDAY, но SQLite её не поддерживает, поэтому воспользуемся методами языка JavaScript.
     // Стандартные методы JavaScript позволяют определить номер дня недели по дате. Но по умолчанию считается, что неделя начинается с воскресенья,
@@ -142,7 +144,7 @@ router.post("/getDataForAddingAttendance", function(req, res) {
 });
 
 router.route("/attendanceJournal")
-    .get((req, res) => {
+    .get(isAuth.isAuthenticated,(req, res) => {
         db.all(`SELECT * FROM student_group`, (err, rows) => {
             if (err) {
                 throw err;
@@ -153,7 +155,7 @@ router.route("/attendanceJournal")
             });
         });
     })
-    .post((req, res) => {
+    .post(isAuth.isAuthenticated,(req, res) => {
         db.all(
             `SELECT journal.id as journal_id, 
             discipline.id as discipline_id, discipline.name as discipline_name, 
@@ -196,7 +198,7 @@ ORDER BY student.id`,
             });
     });
 
-router.post("/deleteJournal/:id", (req, res) => {
+router.post("/deleteJournal/:id", isAuth.isAuthenticated, (req, res) => {
     dbTransaction.beginTransaction((err, transaction) => {
         if (err) {
             throw err;
@@ -232,7 +234,7 @@ router.post("/deleteJournal/:id", (req, res) => {
     });
 });
 
-router.get("/editAttendanceMark", (req, res) => {
+router.get("/editAttendanceMark", isAuth.isAuthenticated, (req, res) => {
     var student_group_id = req.query.student_group_id;
     var date_pair = req.query.date_pair;
     var week_day = moment(date_pair).isoWeekday() - 1;
@@ -285,7 +287,7 @@ router.get("/editAttendanceMark", (req, res) => {
         });
 });
 
-router.post("/editAttendanceMark", (req, res) => {
+router.post("/editAttendanceMark", isAuth.isAuthenticated, (req, res) => {
     var arrayStudents = req.body.array_students_id;
     if (Array.isArray(arrayStudents) == false && arrayStudents !== undefined) {
         arrayStudents = [];
@@ -380,7 +382,7 @@ router.post("/editAttendanceMark", (req, res) => {
     });
 });
 
-router.post("/getAttendanceData", function(req, res) {
+router.post("/getAttendanceData", isAuth.isAuthenticated, function(req, res) {
     db.all(
         `SELECT journal.id FROM journal
             INNER JOIN schedule ON schedule.id=journal.schedule_id
