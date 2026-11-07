@@ -23,78 +23,82 @@ router.route("/addAttendanceMark")
         });
     })
     .post((req, res) => {
-    // получаем массив идентификаторов студентов, для которых нужно добавить отметку посещаемости
     var arrayStudents = req.body.array_students_id;
-    // добавляем следующую проверку: если arrayStudents не является массивом и не имеет значение undefined, то значит в списке был один студент
-    // если один студент, то отметка посещаемости тоже одна и в таком случае передаётся на сторону сервера только одно значение не в массиве
-    // если отметок посещаемости несколько, то все они передаются в одном массиве
-    if (Array.isArray(arrayStudents) == false && arrayStudents!==undefined){
+    if (Array.isArray(arrayStudents) == false && arrayStudents !== undefined) {
         arrayStudents = [];
         arrayStudents.push(req.body.array_students_id);
     }
-    // проверяем, что arrayStudents является массивом, поскольку, если в группе нет студентов, то arrayStudents будем иметь тип undefined
-    if (Array.isArray(arrayStudents) == true ) {
 
-        var schedule = req.body.schedule_id;
-        if (Array.isArray(schedule) == false && schedule!==undefined){
-            schedule = [];
-            schedule.push(req.body.schedule_id);
+    if (Array.isArray(arrayStudents) == false) {
+        return res.status(400).send("В группе нет студентов для добавления отметок посещаемости");
+    }
+
+    var schedule = req.body.schedule_id;
+    if (Array.isArray(schedule) == false && schedule !== undefined) {
+        schedule = [];
+        schedule.push(req.body.schedule_id);
+    }
+
+    if (schedule === undefined) {
+        return res.status(400).send("На выбранную дату у группы нет занятий");
+    }
+
+    var journal = [];
+    for (var i = 0; i < schedule.length; i++) {
+        journal.push(schedule[i], req.body.date_pair);
+    }
+    var placeholders = schedule.map(() => '(?, ?)').join(',');
+
+    dbTransaction.beginTransaction((err, transaction) => {
+        if (err) {
+            throw err;
         }
-        var journal = [];
-        for (var i = 0; i < schedule.length; i++) {
-            journal.push(schedule[i], req.body.date_pair);
-        }
-        var placeholders = schedule.map(() => '(?, ?)').join(',');
-        dbTransaction.beginTransaction((err, transaction) => {
-            transaction.run(
-                `INSERT INTO journal(schedule_id, date_pair) VALUES ` + placeholders,
-                journal,
-                (err) => {
-                    if (err) {
+        transaction.run(
+            `INSERT INTO journal(schedule_id, date_pair) VALUES ` + placeholders,
+            journal,
+            (err) => {
+                if (err) {
+                    return transaction.rollback(() => {
                         throw err;
-                    }
-                    var journal_student = [];
-                    for (var i = 0; i < arrayStudents.length; i++) {
-                        for (var j = 0; j < schedule.length; j++) {
-                            // сначала добавляем идентификатор студента
-                            journal_student.push(arrayStudents[i]);
-                            // определяем отметку посещаемости
-                            // если нашли в теле запроса отметку посещаемости, то значит была установлена галочка
-                            // (если галочка не поставлена, то информация по отметке не отправляется из формы на сервер)
-                            if (req.body["attendance" + i + "" + j] != null) {
-                                journal_student.push(1);
-                            }
-                            else {
-                                journal_student.push(0);
-                            }
+                    });
+                }
+                var journal_student = [];
+                var placeholders = [];
+                for (var i = 0; i < arrayStudents.length; i++) {
+                    for (var j = 0; j < schedule.length; j++) {
+                        placeholders.push('(?, ?, (SELECT id FROM journal WHERE schedule_id = ? AND date_pair = ?))');
+                        journal_student.push(arrayStudents[i]);
+                        if (req.body["attendance" + i + "" + j] != null) {
+                            journal_student.push(1);
                         }
+                        else {
+                            journal_student.push(0);
+                        }
+                        journal_student.push(schedule[j]);
+                        journal_student.push(req.body.date_pair);
                     }
+                }
+                placeholders = placeholders.join(',');
 
-                    var placeholders = arrayStudents.map(() => {
-                            return schedule.map((id) => `(?, ?, (SELECT id FROM journal WHERE schedule_id =  ${id} AND date_pair = "${req.body.date_pair}"))`)
-                                .join(',');
-                        }).join(',')
-                    ;
-                    transaction.run(
-                        `INSERT INTO journal_student(student_id, attendance, journal_id) VALUES ` + placeholders,
-                        journal_student,
-                        (err) => {
+                transaction.run(
+                    `INSERT INTO journal_student(student_id, attendance, journal_id) VALUES ` + placeholders,
+                    journal_student,
+                    (err) => {
+                        if (err) {
+                            return transaction.rollback(() => {
+                                throw err;
+                            });
+                        }
+                        transaction.commit((err) => {
                             if (err) {
                                 throw err;
                             }
-                            // фиксируем транзакцию
-                            transaction.commit((err) => {
-                                if (err) {
-                                    throw err;
-                                }
-                                // в случае успешного выполнения транзакции переходим к странице просмотра отметок посещаемости
-                                res.redirect("/attendanceJournal");
-                            });
+                            res.redirect("/attendanceJournal");
                         });
-                });
+                    });
             });
-        }
     });
+});
 
 router.post("/getDataForAddingAttendance", function(req, res) {
     // Определим по дате номер дня недели.
@@ -193,16 +197,39 @@ ORDER BY student.id`,
     });
 
 router.post("/deleteJournal/:id", (req, res) => {
-    db.run(
-        `DELETE FROM journal WHERE id = ?`,
-        [req.params.id],
-        (err) => {
-            if (err) {
-                throw err;
-            }
-            res.redirect("/attendanceJournal");
+    dbTransaction.beginTransaction((err, transaction) => {
+        if (err) {
+            throw err;
         }
-    );
+        transaction.run(
+            `DELETE FROM journal_student WHERE journal_id = ?`,
+            [req.params.id],
+            (err) => {
+                if (err) {
+                    return transaction.rollback(() => {
+                        throw err;
+                    });
+                }
+                transaction.run(
+                    `DELETE FROM journal WHERE id = ?`,
+                    [req.params.id],
+                    (err) => {
+                        if (err) {
+                            return transaction.rollback(() => {
+                                throw err;
+                            });
+                        }
+                        transaction.commit((err) => {
+                            if (err) {
+                                throw err;
+                            }
+                            res.json({ success: true });
+                        });
+                    }
+                );
+            }
+        );
+    });
 });
 
 router.get("/editAttendanceMark", (req, res) => {
@@ -265,70 +292,92 @@ router.post("/editAttendanceMark", (req, res) => {
         arrayStudents.push(req.body.array_students_id);
     }
 
-    if (Array.isArray(arrayStudents) == true) {
-        var schedule = req.body.schedule_id;
-        if (Array.isArray(schedule) == false && schedule !== undefined) {
-            schedule = [];
-            schedule.push(req.body.schedule_id);
+    if (Array.isArray(arrayStudents) == false) {
+        return res.status(400).send("В группе нет студентов для редактирования отметок посещаемости");
+    }
+
+    var schedule = req.body.schedule_id;
+    if (Array.isArray(schedule) == false && schedule !== undefined) {
+        schedule = [];
+        schedule.push(req.body.schedule_id);
+    }
+
+    if (schedule === undefined) {
+        return res.status(400).send("Не выбраны пары для редактирования отметок посещаемости");
+    }
+
+    var student_group_id = req.body.student_group_id;
+    var date_pair = req.body.date_pair;
+
+    dbTransaction.beginTransaction((err, transaction) => {
+        if (err) {
+            throw err;
         }
 
-        var student_group_id = req.body.student_group_id;
-        var date_pair = req.body.date_pair;
+        transaction.run(
+            `DELETE FROM journal 
+             WHERE date_pair = ? 
+               AND schedule_id IN (SELECT id FROM schedule WHERE student_group_id = ?)`,
+            [date_pair, student_group_id],
+            (err) => {
+                if (err) {
+                    return transaction.rollback(() => {
+                        throw err;
+                    });
+                }
 
-        dbTransaction.beginTransaction((err, transaction) => {
-            if (err) throw err;
+                var journal = [];
+                for (var i = 0; i < schedule.length; i++) {
+                    journal.push(schedule[i], date_pair);
+                }
+                var placeholders = schedule.map(() => '(?, ?)').join(',');
 
-            transaction.run(
-                `DELETE FROM journal 
-                 WHERE date_pair = ? 
-                   AND schedule_id IN (SELECT id FROM schedule WHERE student_group_id = ?)`,
-                [date_pair, student_group_id],
-                (err) => {
-                    if (err) throw err;
+                transaction.run(
+                    `INSERT INTO journal(schedule_id, date_pair) VALUES ` + placeholders,
+                    journal,
+                    (err) => {
+                        if (err) {
+                            return transaction.rollback(() => {
+                                throw err;
+                            });
+                        }
 
-                    var journal = [];
-                    for (var i = 0; i < schedule.length; i++) {
-                        journal.push(schedule[i], date_pair);
-                    }
-                    var placeholders = schedule.map(() => '(?, ?)').join(',');
-
-                    transaction.run(
-                        `INSERT INTO journal(schedule_id, date_pair) VALUES ` + placeholders,
-                        journal,
-                        (err) => {
-                            if (err) throw err;
-
-                            var journal_student = [];
-                            for (var i = 0; i < arrayStudents.length; i++) {
-                                for (var j = 0; j < schedule.length; j++) {
-                                    journal_student.push(arrayStudents[i]);
-                                    if (req.body["attendance" + i + "" + j] != null) {
-                                        journal_student.push(1);
-                                    } else {
-                                        journal_student.push(0);
-                                    }
+                        var journal_student = [];
+                        var placeholders = [];
+                        for (var i = 0; i < arrayStudents.length; i++) {
+                            for (var j = 0; j < schedule.length; j++) {
+                                placeholders.push('(?, ?, (SELECT id FROM journal WHERE schedule_id = ? AND date_pair = ?))');
+                                journal_student.push(arrayStudents[i]);
+                                if (req.body["attendance" + i + "" + j] != null) {
+                                    journal_student.push(1);
+                                } else {
+                                    journal_student.push(0);
                                 }
+                                journal_student.push(schedule[j]);
+                                journal_student.push(date_pair);
                             }
+                        }
+                        placeholders = placeholders.join(',');
 
-                            var placeholders = arrayStudents.map(() => {
-                                return schedule.map((id) => `(?, ?, (SELECT id FROM journal WHERE schedule_id =  ${id} AND date_pair = "${date_pair}"))`)
-                                    .join(',');
-                            }).join(',');
-
-                            transaction.run(
-                                `INSERT INTO journal_student(student_id, attendance, journal_id) VALUES ` + placeholders,
-                                journal_student,
-                                (err) => {
-                                    if (err) throw err;
-                                    transaction.commit((err) => {
-                                        if (err) throw err;
-                                        res.redirect("/attendanceJournal");
+                        transaction.run(
+                            `INSERT INTO journal_student(student_id, attendance, journal_id) VALUES ` + placeholders,
+                            journal_student,
+                            (err) => {
+                                if (err) {
+                                    return transaction.rollback(() => {
+                                        throw err;
                                     });
+                                }
+                                transaction.commit((err) => {
+                                    if (err) {
+                                        throw err;
+                                    }
+                                    res.redirect("/attendanceJournal");
                                 });
-                        });
-                });
-        });
-    }
+                            });
+                    });
+            });
+    });
 });
 
 router.post("/getAttendanceData", function(req, res) {

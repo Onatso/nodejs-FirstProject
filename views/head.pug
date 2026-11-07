@@ -6,14 +6,15 @@ html
             link(rel="stylesheet" href="/bootstrap/css/bootstrap.css")
             link(rel="stylesheet" href="/css/style.css")
     body
-        nav(class="navbar navbar-light px-4" style="background-color: #B0DDFB;")
-            a(href="/listStudentGroups" class="navbar-brand") Студенческие группы
-            a(href="/listStudents" class="navbar-brand") Студенты
-            a(href="/listTeachers" class="navbar-brand") Преподаватели
-            a(href="/listDisciplines" class="navbar-brand") Учебные дисциплины
-            a(href="/listDisciplineTeacher" class="navbar-brand") Учебные дисциплины преподавателей
-            a(href="/schedule" class="navbar-brand") Расписание занятий
-            a(href="/attendanceJournal" class="navbar-brand") Журнал посещаемости
+        nav(class="navbar navbar-light" style="background-color: #B0DDFB;")
+            div(class="container-md")
+                a(href="/listStudentGroups" class="navbar-brand") Студенческие группы
+                a(href="/listStudents" class="navbar-brand") Студенты
+                a(href="/listTeachers" class="navbar-brand") Преподаватели
+                a(href="/listDisciplines" class="navbar-brand") Учебные дисциплины
+                a(href="/listDisciplineTeacher" class="navbar-brand") Учебные дисциплины преподавателей
+                a(href="/schedule" class="navbar-brand") Расписание занятий
+                a(href="/attendanceJournal" class="navbar-brand") Журнал посещаемости
         div(class="container-md mt-3")
             block content
         block scripts

@@ -48,11 +48,13 @@ $(document).ready(() => {
                     ;
                 }
 
+                // кнопки удаления — по одной на каждую пару
+                // класс delete-pair нужен, чтобы делегированный обработчик ниже поймал submit и превратил его в AJAX
                 var strDelete = "";
                 for (var i in journal) {
                     strDelete = strDelete +
                         `<td>
-                            <form action="/deleteJournal/${journal[i].journal_id}" method="POST">
+                            <form class="delete-pair" action="/deleteJournal/${journal[i].journal_id}" method="POST">
                                 <input type="submit" value="Удалить" class="btn btn-danger">
                             </form>
                         </td>`
@@ -91,7 +93,7 @@ $(document).ready(() => {
 
                 // формируем таблицу, но здесь используется "чистый" html
                 $("#attendance_table_id").append(
-                    `<table border="1" class="table table-bordered table-striped mt-3">
+                    `<table class="table table-bordered table-striped mt-3">
                         <thead class="table-primary">
                             <tr>
                                 <td rowspan="2" colspan="2"></td>
@@ -135,6 +137,24 @@ $(document).ready(() => {
             }
         });
     }
+    $(document).on('submit', 'form.delete-pair', function (e) {
+        e.preventDefault();
+        var $form = $(this);
+
+        $.ajax({
+            type: "POST",
+            url: $form.attr('action'),
+            dataType: "json"
+        }).done((data) => {
+            if (data.success) {
+                getDataForAddingAttendance();
+            } else {
+                alert("Не удалось удалить отметки");
+            }
+        }).fail(() => {
+            alert("Ошибка сервера");
+        });
+    });
 
     // при изменении группы подгружаем таблицу
     $("#student_group_id").change(() => {

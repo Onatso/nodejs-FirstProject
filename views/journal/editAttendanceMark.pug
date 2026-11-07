@@ -8,7 +8,7 @@ block content
                 input(type="hidden" name="array_students_id" value=student.id)
             each pair in disciplineTeacher
                 input(type="hidden" name="schedule_id" value=pair.schedule_id)
-            table(border="1" class="table table-bordered table-striped mt-3")
+            table(class="table table-bordered table-striped mt-3")
                 thead(class="table-primary")
                     tr
                         td(rowspan="2" colspan="2")
@@ -28,6 +28,6 @@ block content
                             td #{student.name}
                             each pair, j in disciplineTeacher
                                 td
-                                    input(name='attendance' + i + j type="checkbox" checked=(attendanceMap[student.id + "_" + pair.schedule_id] == 1))
+                                    input(name='attendance' + i + j type="checkbox" class="form-check-input" checked=(attendanceMap[student.id + "_" + pair.schedule_id] == 1))
             div(class="form-group mb-3")
                 input(type="submit" value="Сохранить" class="btn btn-primary")

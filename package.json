@@ -2,7 +2,7 @@
   "name": "firstproject",
   "version": "1.0.0",
   "description": "",
-  "author": "onatso",
+  "author": "Nikolay Valerievich Purtov",
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
